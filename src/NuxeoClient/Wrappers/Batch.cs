@@ -125,6 +125,39 @@ namespace NuxeoClient.Wrappers
             }
         }
 
+        public async Task<Batch> StreamUpload(StreamUploadJob job)
+        {
+            if (job.IsChunked)
+            {
+                var blob = job.Blob;
+                var fileLength = blob.InputStream.Length;
+                int readBytes, currentChunk = 0, chunkCount = (int)Math.Ceiling((double)fileLength / job.ChunkSize);
+                byte[] buffer = new byte[job.ChunkSize];
+                Batch batch = null;
+                while ((readBytes = blob.InputStream.Read(buffer, 0, buffer.Length)) > 0)
+                {
+                    batch = (Batch)await client.PostBin(UrlCombiner.Combine(Endpoint, job.FileId.ToString()),
+                        null,
+                        buffer,
+                        new Dictionary<string, string>() {
+                            { "X-Upload-Type", "chunked" },
+                            { "X-Upload-Chunk-Index", currentChunk.ToString() },
+                            { "X-Upload-Chunk-Count", chunkCount.ToString() },
+                            { "X-File-Name", Uri.EscapeDataString(blob.Filename) },
+                            { "X-File-Type", blob.MimeType },
+                            { "X-File-Size", fileLength.ToString() }
+                        });
+                    currentChunk++;
+                }
+                
+                return batch;
+            }
+            else
+            {
+                throw new NotImplementedException();
+            }
+        }
+
         /// <summary>
         /// Drops the current <see cref="Batch"/> from the server.
         /// </summary>

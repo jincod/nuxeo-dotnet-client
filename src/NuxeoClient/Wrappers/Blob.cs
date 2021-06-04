@@ -128,5 +128,18 @@ namespace NuxeoClient.Wrappers
                             new FileInfo(path),
                             MimeTypeMap.GetMimeType(Path.GetExtension(path)));
         }
+        
+        public Stream InputStream { get; private set; }
+
+        /// <summary>
+        /// Creates a new <see cref="Blob"/> instance from a stream.
+        /// </summary>
+        /// <param name="stream">Stream</param>
+        /// <param name="mimeType"></param>
+        /// <returns>A new <see cref="Blob"/> instance.</returns>
+        public Blob(Stream stream)
+        {
+            InputStream = stream;
+        }
     }
 }
