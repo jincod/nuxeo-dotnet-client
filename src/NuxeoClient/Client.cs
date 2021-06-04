@@ -608,7 +608,7 @@ namespace NuxeoClient
             MediaTypeHeaderValue contentType = response.Content.Headers.ContentType;
             bool isText = contentType.MediaType.Contains("text/");
             bool isJson = contentType.MediaType.StartsWith(ContentType.JSON);
-            bool isMultipart = response.Content.IsMimeMultipartContent();
+            // bool isMultipart = response.Content.IsMimeMultipartContent();
 
             if ((int)response.StatusCode >= 400 && (int)response.StatusCode <= 499)
             {
@@ -635,15 +635,17 @@ namespace NuxeoClient
                                       response.Content.Headers.ContentDisposition.FileName).SetFile(tmpFile);
                 }
             }
-            else if (response.Content.IsMimeMultipartContent())
+            // else if (response.Content.IsMimeMultipartContent())
+            else if (MultipartRequestHelper.IsMultipartContentType(response.Content.Headers.ContentType.MediaType))
             {
-                MultipartMemoryStreamProvider mp = await response.Content.ReadAsMultipartAsync();
-                BlobList blobs = new BlobList();
-                foreach (HttpContent part in mp.Contents)
-                {
-                    blobs.Add(new Blob(IOHelper.CreateTempFile(await part.ReadAsStreamAsync())));
-                }
-                entity = blobs;
+                throw new NotImplementedException();
+                // MultipartMemoryStreamProvider mp = await response.Content.ReadAsMultipartAsync();
+                // BlobList blobs = new BlobList();
+                // foreach (HttpContent part in mp.Contents)
+                // {
+                //     blobs.Add(new Blob(IOHelper.CreateTempFile(await part.ReadAsStreamAsync())));
+                // }
+                // entity = blobs;
             }
             else
             {
