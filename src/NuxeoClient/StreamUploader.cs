@@ -167,7 +167,7 @@ namespace NuxeoClient
         /// </summary>
         /// <returns>A <see cref="Task"/> that will will return an instance of <see cref="EntityList{T}"/> containing
         /// one instance of <see cref="BatchFile"/> per file uploaded.</returns>
-        public async Task<Entity> UploadFile(Stream stream)
+        public async Task<(string batchId, EntityList<Entity> entities)> UploadFile(Stream stream, string filename)
         {
             processedFilesCounter = 0;
             try
@@ -180,7 +180,6 @@ namespace NuxeoClient
                 throw new FailedHandshakeException("Failed to initialize batch with the server.", exception);
             }
 
-            var filename = "filename.mov";
             var blob = new Blob(stream)
                 .SetFilename(filename)
                 .SetMimeType(MimeTypeMap.GetMimeType(Path.GetExtension(filename)));
@@ -197,7 +196,8 @@ namespace NuxeoClient
             {
                 throw new FailedToUploadException(job.ToString(), exception);
             }
-            return await Batch.Info();
+            
+            return (Batch.BatchId, await Batch.Info());
         }
 
         private async Task<Batch> ProcessFile(string path)
