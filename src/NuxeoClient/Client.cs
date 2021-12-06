@@ -309,6 +309,12 @@ namespace NuxeoClient
             return this;
         }
 
+        public Client SetHttpClientTimeout(TimeSpan timeout)
+        {
+            http.Timeout = timeout;
+            return this;
+        }
+
         /// <summary>
         /// Sets the object marshaller for this client.
         /// </summary>
