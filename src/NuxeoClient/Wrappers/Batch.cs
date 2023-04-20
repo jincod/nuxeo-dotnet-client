@@ -21,6 +21,7 @@ using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace NuxeoClient.Wrappers
@@ -138,7 +139,7 @@ namespace NuxeoClient.Wrappers
                 {
                     batch = (Batch)await client.PostBin(UrlCombiner.Combine(Endpoint, job.FileId.ToString()),
                         null,
-                        buffer,
+                        readBytes < buffer.Length ? buffer.Take(readBytes).ToArray() : buffer,
                         new Dictionary<string, string>() {
                             { "X-Upload-Type", "chunked" },
                             { "X-Upload-Chunk-Index", currentChunk.ToString() },

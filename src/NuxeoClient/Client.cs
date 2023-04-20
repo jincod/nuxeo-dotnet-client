@@ -501,6 +501,7 @@ namespace NuxeoClient
             {
                 request.Content = new ByteArrayContent(data);
             }
+            request.Content.Headers.ContentLength = data.Length;
             request.Content.Headers.ContentType = new MediaTypeHeaderValue(ContentType.OCTETSTREAM);
             return await ProcessRequest(request, additionalHeaders);
         }
